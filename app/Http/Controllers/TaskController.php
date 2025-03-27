@@ -11,9 +11,14 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //Fetches all tasks from the tasks table and returns them as a JSON response.
-        return Task::all();
+        try {
+            $tasks = Task::all(); // Assuming you're fetching all tasks
+            return response()->json($tasks);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch tasks'], 500);
+        }
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -21,7 +26,12 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         //Adds a new task to the database
-        $task = Task::create($request->all());
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:Pending,In Progress, Completed',
+        ]);
+        $task = Task::create($validated);
         return response()->json($task,201);
     }
 
@@ -31,22 +41,31 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         //
-        return $task;
+        return response()->json($task);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Task $task)
     {
         //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:Pending,In Progress, Completed',
+        ]);
+        $task->update($validated);
+        return response()->json($task);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Task $tsak)
     {
         //
+        $task->delete();
+        return response()->json(null, 204);
     }
 }
