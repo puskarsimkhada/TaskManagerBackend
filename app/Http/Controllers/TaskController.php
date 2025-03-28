@@ -29,7 +29,7 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:Pending,In Progress, Completed',
+            'status' => 'required|in:Pending,In Progress,Completed',
         ]);
         $task = Task::create($validated);
         return response()->json($task,201);
@@ -53,7 +53,7 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:Pending,In Progress, Completed',
+            'status' => 'required|in:Pending,In Progress,Completed',
         ]);
         $task->update($validated);
         return response()->json($task);
