@@ -50,11 +50,17 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         //
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:Pending,In Progress,Completed',
-        ]);
+        if($request->has('status')){
+            $validated = $request->validate(['status' => 'required|in:Pending,In Progress,Completed']);
+        }
+        else{
+
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'status' => 'required|in:Pending,In Progress,Completed',
+            ]);
+        }
         $task->update($validated);
         return response()->json($task);
     }
