@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -21,18 +22,23 @@ class AuthController extends Controller
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
-        'password' => bcrypt($request->password),
+        'password' => Hash::make($request->password),
     ]);
+
+    // Ensure the user implements JWTSubject
+    // if (!$user instanceof \Tymon\JWTAuth\Contracts\JWTSubject) {
+    //     return response()->json(['error' => 'User model does not implement JWTSubject'], 500);
+    // }
 
     $token = JWTAuth::fromUser($user);
 
-    return response()->json(['user' => $user, 'token' => $token]);
+    return response()->json(['user' => $user, 'token' => $token],201);
     }
 
     //Login
     public function login(Request $request){
         $credentials = $request->only('email', 'password');
-        if($token != JWTAuth::attempt($credentials)){
+        if(!$token = JWTAuth::attempt($credentials)){
             return response()->json(['error' => 'unauthorized']);
         }
         return response()->json(['token' => $token]);
