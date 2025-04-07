@@ -25,11 +25,6 @@ class AuthController extends Controller
         'password' => Hash::make($request->password),
     ]);
 
-    // Ensure the user implements JWTSubject
-    // if (!$user instanceof \Tymon\JWTAuth\Contracts\JWTSubject) {
-    //     return response()->json(['error' => 'User model does not implement JWTSubject'], 500);
-    // }
-
     $token = JWTAuth::fromUser($user);
 
     return response()->json(['user' => $user, 'token' => $token],201);
@@ -41,6 +36,9 @@ class AuthController extends Controller
         if(!$token = JWTAuth::attempt($credentials)){
             return response()->json(['error' => 'unauthorized']);
         }
+        $user = auth()->user();
+        $user->status = 1;
+        $user->save();
         return response()->json(['token' => $token]);
     }
 
@@ -50,14 +48,15 @@ class AuthController extends Controller
     }
 
     //Logout User
-
     public function logout(){
+        $user = auth()->user();
+        $user->status = 0;
+        $user->save();
         auth()->logout();
         return response()->json(['message' => "Successfully Logout"]);
     }
 
     //Refresh the token
-
     public function refresh(){
         return response()->json([
             'token' => auth()->refresh()
