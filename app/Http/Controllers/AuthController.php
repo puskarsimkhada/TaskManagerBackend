@@ -42,6 +42,18 @@ class AuthController extends Controller
         return response()->json(['token' => $token]);
     }
 
+    //for status
+    public function updateStatus(Request $request){
+        $user = auth()->user();
+        $request->validate([
+            'status' => 'required|boolean'
+        ]);
+        $user->status = $request->status;
+        $user->save();
+
+        return response()->json(['message' => 'status updated successfully']);
+    }
+
     //Get User Details
     public function profile(){
         return response()->json(auth()->user());
