@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\KhaltiPaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -29,3 +30,6 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(['message' => 'API is working']);
     });
 // });
+
+//Khalti Payment
+Route::post('/verify-khalti', [KhaltiPaymentController::class, 'verifyPayment']);
